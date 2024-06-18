@@ -58,7 +58,8 @@ def webhook():
         final_audio = assemble_audio(intro, main_sections, outro, background)
         
         # ADD THE WEBHOOK FIELDS TO THE NAME
-        output_filename = f"final_audio_{data['sesh_id']}.mp3"  # Assuming field1 can be used to generate a unique filename
+        # output_filename = f"final_audio_{data['sesh_id']}.mp3"  # Assuming field1 can be used to generate a unique filename
+        output_filename = f"affirmation_{data['request_id']}_{data['user_id']}_{data['sesh_id']}.mp3"
         output_path = os.path.join("output", output_filename)
         export_audio(final_audio, output_path)
 
