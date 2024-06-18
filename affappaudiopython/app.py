@@ -31,14 +31,6 @@ def webhook():
             return jsonify({"error": "Invalid JSON"}), 400
 
         # Validate necessary fields
-        # IMPLEMENT THE FOLLOWING
-        # The webhook will send the following specific data to trigger the application:
-        # Request ID: A unique identifier for the request.
-        # User ID: The ID of the user requesting the audio file.
-        # Preferences: Optional preferences for the audio content (e.g., type of background music, specific themes for the spoken word).
-        # Timestamp: The timestamp when the request was made.
-        # Callback URL: The URL to send the response once the audio file is generated.
-
         required_fields = ["request_id", "user_id", "sesh_id", "timestamp", "callback_url"] # Replace with actual field names
         for field in required_fields:
             if field not in data:
@@ -58,7 +50,6 @@ def webhook():
         final_audio = assemble_audio(intro, main_sections, outro, background)
         
         # ADD THE WEBHOOK FIELDS TO THE NAME
-        # output_filename = f"final_audio_{data['sesh_id']}.mp3"  # Assuming field1 can be used to generate a unique filename
         output_filename = f"affirmation_{data['request_id']}_{data['user_id']}_{data['sesh_id']}.mp3"
         output_path = os.path.join("output", output_filename)
         export_audio(final_audio, output_path)
