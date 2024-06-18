@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import logging
 import os
+from datetime import datetime, timezone
 from audio_selector import select_intro, select_outro, select_main_sections, select_background, assemble_audio, export_audio
 
 app = Flask(__name__)
@@ -54,15 +55,54 @@ def webhook():
         output_path = os.path.join("output", output_filename)
         export_audio(final_audio, output_path)
 
+        # Generate the current timestamp in ISO 8601 format with UTC timezone
+        current_timestamp = datetime.now(timezone.utc).isoformat()
+
         # If processing is successful
         logging.info("Audio processing completed successfully")
-        return jsonify({"message": "Audio processing completed successfully", "file_link": output_path}), 200
+        
+        response_payload = {
+            "status": "success",
+            "request_id": data['request_id'],
+            "user_id": data['user_id'],
+            "sesh_id": data['sesh_id'],
+            "generated_audio_url": output_path,
+            "timestamp": current_timestamp
+        }
+
+        return jsonify(response_payload), 200
+    # Error messages if there is a failure
+
     except FileNotFoundError as fnf_error:
         logging.error(f"File not found error: {str(fnf_error)}", exc_info=True)
-        return jsonify({"error": str(fnf_error)}), 404
+
+        current_timestamp = datetime.now(timezone.utc).isoformat()
+        error_response_payload = {
+            "status": "failure",
+            "request_id": data['request_id'],
+            "user_id": data['user_id'],
+            "sesh_id": data['sesh_id'],
+            "error_message": "Failed to generate audio due to insufficient input files.",
+            "timestamp": current_timestamp
+        }
+
+        return jsonify(error_response_payload), 404
+
     except Exception as e:
         logging.error(f"Error processing webhook: {str(e)}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+
+        current_timestamp = datetime.now(timezone.utc).isoformat()
+        error_response_payload = {
+            "status": "failure",
+            "request_id": data['request_id'],
+            "user_id": data['user_id'],
+            "sesh_id": data['sesh_id'],
+            "error_message": str(e),
+            "timestamp": current_timestamp
+        }
+
+        return jsonify(error_response_payload), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)  # Enable debug mode and ensure not to use port 5000
