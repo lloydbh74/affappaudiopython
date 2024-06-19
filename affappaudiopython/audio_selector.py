@@ -11,7 +11,7 @@ INTRO_DIR = "audio_files/intro"
 OUTRO_DIR = "audio_files/outro"
 MAIN_SECTION_DIR = "audio_files/main"
 BACKGROUND_DIR = "audio_files/background"
-OUTPUT_DIR = "output"  # Directory to save the final audio file
+OUTPUT_DIR = "output"  # Directory to save the final audio file - MAYBE ADD USER AND SESH ID SUB DIRECTORY
 
 def select_audio_file(directory):
     """Select a random audio file from the specified directory."""
@@ -39,16 +39,31 @@ def select_outro():
     logging.info("Selecting outro audio file")
     return select_audio_file(OUTRO_DIR)
 
+
 def select_main_sections():
-    """Select 3-5 main section audio files."""
+    """Select an even distribution of main section audio files."""
     logging.info("Selecting main section audio files")
     try:
-        files = list(set(select_audio_file(MAIN_SECTION_DIR) for _ in range(random.randint(3, 5))))
-        logging.info(f"Selected main section files: {files}")
-        return files
+        abs_directory = os.path.abspath(MAIN_SECTION_DIR)
+        logging.info(f"Accessing directory: {abs_directory}")
+        files = [f for f in os.listdir(MAIN_SECTION_DIR) if f.endswith('.mp3')]
+        logging.info(f"Files found in directory {MAIN_SECTION_DIR}: {files}")
+
+        if not files:
+            raise FileNotFoundError(f"No audio files found in directory: {MAIN_SECTION_DIR}")
+
+        # Calculate the number of files for even distribution
+        num_files = len(files)
+        if num_files == 0:
+            raise FileNotFoundError(f"No audio files found in directory: {MAIN_SECTION_DIR}")
+
+        selected_files = [os.path.join(MAIN_SECTION_DIR, file) for file in files]
+        logging.info(f"Selected main section files: {selected_files}")
+        return selected_files
     except Exception as e:
         logging.error(f"Error selecting main section audio files: {str(e)}", exc_info=True)
         raise
+
 
 def select_background():
     """Select the background audio file."""
@@ -62,11 +77,11 @@ def overlay_audio(background_audio, main_sections):
 
         # Calculate the start times for the main sections to ensure even distribution
         main_section_count = len(main_sections)
-        interval = (20 * 60 * 1000 - 3 * 60 * 1000) // main_section_count  # Total duration minus intro duration divided by number of sections
+        interval = (17 * 60 * 1000 - 3 * 60 * 1000) // main_section_count  # Total duration minus intro duration divided by number of sections
 
         for i, main_audio in enumerate(main_sections):
             logging.info(f"Main section {i+1} length: {len(main_audio)} ms")
-            start_time = (4 * 60 * 1000) + (i * interval)  # Start at 3 minutes, then evenly distributed
+            start_time = (4 * 60 * 1000) + (i * interval)  # Start at 4 minutes, then evenly distributed
             logging.info(f"Overlaying main section {i+1} at {start_time} ms")
             background_audio = background_audio.overlay(main_audio, position=start_time)
         return background_audio
