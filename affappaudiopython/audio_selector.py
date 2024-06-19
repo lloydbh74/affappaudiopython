@@ -40,29 +40,30 @@ def select_outro():
     return select_audio_file(OUTRO_DIR)
 
 
-def select_main_sections():
+def select_main_sections(directory_path):
     """Select an even distribution of main section audio files."""
     logging.info("Selecting main section audio files")
     try:
-        abs_directory = os.path.abspath(MAIN_SECTION_DIR)
+        abs_directory = os.path.abspath(directory_path)
         logging.info(f"Accessing directory: {abs_directory}")
-        files = [f for f in os.listdir(MAIN_SECTION_DIR) if f.endswith('.mp3')]
-        logging.info(f"Files found in directory {MAIN_SECTION_DIR}: {files}")
+        files = [f for f in os.listdir(directory_path) if f.endswith('.mp3')]
+        logging.info(f"Files found in directory {directory_path}: {files}")
 
         if not files:
-            raise FileNotFoundError(f"No audio files found in directory: {MAIN_SECTION_DIR}")
+            raise FileNotFoundError(f"No audio files found in directory: {directory_path}")
 
         # Calculate the number of files for even distribution
         num_files = len(files)
         if num_files == 0:
-            raise FileNotFoundError(f"No audio files found in directory: {MAIN_SECTION_DIR}")
+            raise FileNotFoundError(f"No audio files found in directory: {directory_path}")
 
-        selected_files = [os.path.join(MAIN_SECTION_DIR, file) for file in files]
+        selected_files = [os.path.join(directory_path, file) for file in files]
         logging.info(f"Selected main section files: {selected_files}")
         return selected_files
     except Exception as e:
         logging.error(f"Error selecting main section audio files: {str(e)}", exc_info=True)
         raise
+
 
 
 def select_background():

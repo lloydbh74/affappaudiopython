@@ -44,7 +44,15 @@ def webhook():
         logging.info(f"Selected intro: {intro}")
         outro = select_outro()
         logging.info(f"Selected outro: {outro}")
-        main_sections = select_main_sections()
+        #main_sections = select_main_sections()
+        # Construct the dynamic directory path
+        user_id = data['user_id']
+        sesh_id = data['sesh_id']
+        dynamic_main_section_dir = f"audio_files/main/{user_id}_{sesh_id}"
+
+        # Select main sections using the dynamic directory path
+        main_sections = select_main_sections(dynamic_main_section_dir)
+
         logging.info(f"Selected main sections: {main_sections}")
         background = select_background()
         logging.info(f"Selected background: {background}")
