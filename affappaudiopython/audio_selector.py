@@ -66,7 +66,7 @@ def overlay_audio(background_audio, main_sections):
 
         for i, main_audio in enumerate(main_sections):
             logging.info(f"Main section {i+1} length: {len(main_audio)} ms")
-            start_time = (3 * 60 * 1000) + (i * interval)  # Start at 3 minutes, then evenly distributed
+            start_time = (4 * 60 * 1000) + (i * interval)  # Start at 3 minutes, then evenly distributed
             logging.info(f"Overlaying main section {i+1} at {start_time} ms")
             background_audio = background_audio.overlay(main_audio, position=start_time)
         return background_audio
