@@ -77,7 +77,8 @@ The AffAppAudioPython application architecture is built around a Flask-based web
 5. **Test the webhook endpoint**:
     - Send a POST request to `http://localhost:8000/webhook` with the required JSON payload, including fields such as `request_id`, `user_id`, `sesh_id`, `timestamp`, and `callback_url`.
 #### Example Request
-```{
+```
+{
   "request_id": "4321",
   "user_id": "user456",
   "sesh_id": "sesh9",
@@ -90,6 +91,25 @@ The AffAppAudioPython application architecture is built around a Flask-based web
 
 - Ensure that the directories for intro, outro, main sections, and background audio files (`audio_files/intro`, `audio_files/outro`, `audio_files/main`, `audio_files/background`) exist and contain `.mp3` files.
 - The application logs information to both the console and a log file for easier debugging and monitoring.
+
+#### Error logs
+
+| Error Message                                            | Function Name                | Meaning                                                                 |
+|----------------------------------------------------------|------------------------------|-------------------------------------------------------------------------|
+| Invalid JSON received                                    | webhook                      | The incoming webhook request does not contain valid JSON.               |
+| Missing field: {field}                                   | webhook                      | The incoming webhook request is missing a required field.               |
+| File not found error: {str(fnf_error)}                   | webhook                      | A required audio file could not be found during processing.             |
+| Error processing webhook: {str(e)}                       | webhook                      | An unspecified error occurred during the processing of the webhook request. |
+| No audio files found in directory: {directory}           | select_audio_file            | The specified directory does not contain any audio files.               |
+| Error selecting audio file from {directory}: {str(e)}    | select_audio_file            | An error occurred while selecting an audio file from the specified directory. |
+| Error selecting main section audio files: {str(e)}       | select_main_sections         | An error occurred while selecting main section audio files.             |
+| Error selecting background audio file: {str(e)}          | select_background            | An error occurred while selecting a background audio file.              |
+| Error assembling audio files: {str(e)}                   | assemble_audio               | An error occurred while assembling the audio files into a final audio track. |
+| Error exporting audio file: {str(e)}                     | export_audio                 | An error occurred while exporting the final audio file to the specified path. |
+| Error during audio selection, assembly, and export test: {str(e)} | __main__ (in audio_selector.py) | An error occurred during the test of audio selection, assembly, and export functions. |
+
+This table should help in understanding where and what kind of errors might occur in the application, allowing for easier debugging and maintenance.
+
 
 ### License
 
